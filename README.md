@@ -59,9 +59,52 @@ DecodedUplink result = codec.decodeUplink(payloadBytes, fPort, timestamp);
 UplinkData data = (UplinkData) result.getData();
 ```
 
+## Installation
+
+### Option 1: JitPack (Recommended - Zero Setup)
+
+Add to your `pom.xml`:
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependencies>
+    <dependency>
+        <groupId>com.github.kevinmarvin</groupId>
+        <artifactId>abeeway-smart-badge-codec</artifactId>
+        <version>v1.0.0</version>
+    </dependency>
+</dependencies>
+```
+
+### Option 2: Local Installation
+
+```bash
+git clone https://github.com/kevinmarvin/abeeway-smart-badge-codec.git
+cd abeeway-smart-badge-codec
+mvn clean install
+```
+
+Then add to your project:
+```xml
+<dependency>
+    <groupId>com.github.kevinmarvin</groupId>
+    <artifactId>abeeway-smart-badge-codec</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
 ### High-Level Parameter Configuration (Recommended)
 
 ```java
+import com.github.kevinmarvin.abeeway.AbeewaySmartBadgeCodec;
+import com.github.kevinmarvin.abeeway.parameters.AbeewayParams;
+
 // Build parameters using fluent API - no protocol knowledge required!
 AbeewayParams params = AbeewaySmartBadgeCodec.newParameters()
     .setGpsTimeout(120)                    // 2 minutes

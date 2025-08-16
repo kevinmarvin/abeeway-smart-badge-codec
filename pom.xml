@@ -5,8 +5,8 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.abeeway</groupId>
-    <artifactId>smartbadge-codec</artifactId>
+    <groupId>com.github.kevinmarvin</groupId>
+    <artifactId>abeeway-smart-badge-codec</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
