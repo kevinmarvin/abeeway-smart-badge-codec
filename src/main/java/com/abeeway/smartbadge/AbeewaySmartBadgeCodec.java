@@ -9,6 +9,8 @@ import com.abeeway.smartbadge.models.UplinkData;
 import com.abeeway.smartbadge.enums.MessageType;
 import com.abeeway.smartbadge.decoders.*;
 import com.abeeway.smartbadge.encoders.CommandEncoder;
+import com.abeeway.smartbadge.encoders.ParameterEncoder;
+import com.abeeway.smartbadge.parameters.AbeewayParams;
 import com.abeeway.smartbadge.utils.BitUtils;
 import com.abeeway.smartbadge.utils.ByteUtils;
 import com.abeeway.smartbadge.utils.ValidationUtils;
@@ -30,6 +32,7 @@ public class AbeewaySmartBadgeCodec {
     private final EventDecoder eventDecoder;
     private final CommonFieldsDecoder commonFieldsDecoder;
     private final CommandEncoder commandEncoder;
+    private final ParameterEncoder parameterEncoder;
     
     public AbeewaySmartBadgeCodec() {
         this.positionDecoder = new PositionDecoder();
@@ -37,6 +40,7 @@ public class AbeewaySmartBadgeCodec {
         this.eventDecoder = new EventDecoder();
         this.commonFieldsDecoder = new CommonFieldsDecoder();
         this.commandEncoder = new CommandEncoder();
+        this.parameterEncoder = new ParameterEncoder();
         
         // Initialize configuration decoder parameters
         this.configurationDecoder.initializeParameters();
@@ -278,6 +282,50 @@ public class AbeewaySmartBadgeCodec {
         
         Map<String, Object> commandData = (Map<String, Object>) data;
         return commandEncoder.encodeDownlink(commandData, fPort);
+    }
+    
+    /**
+     * Encode device parameters using the high-level parameter builder.
+     *
+     * @param params The parameters to encode
+     * @param fPort  The LoRaWAN frame port
+     * @return EncodedDownlink containing the encoded parameter bytes
+     * @throws EncodingException if the parameters cannot be encoded
+     */
+    public EncodedDownlink encodeParameters(AbeewayParams params, int fPort) 
+            throws EncodingException {
+        return parameterEncoder.encodeParameters(params, fPort);
+    }
+    
+    /**
+     * Encode a configuration command (mode change, config request, etc.).
+     *
+     * @param command The configuration command to encode
+     * @param fPort   The LoRaWAN frame port
+     * @return EncodedDownlink containing the encoded command bytes
+     * @throws EncodingException if the command cannot be encoded
+     */
+    public EncodedDownlink encodeConfigurationCommand(ParameterEncoder.ConfigurationCommand command, int fPort) 
+            throws EncodingException {
+        return parameterEncoder.encodeConfigurationCommand(command, fPort);
+    }
+    
+    /**
+     * Create a parameter builder for fluent parameter configuration.
+     *
+     * @return A new AbeewayParams.Builder instance
+     */
+    public static AbeewayParams.Builder newParameters() {
+        return AbeewayParams.builder();
+    }
+    
+    /**
+     * Get all available parameters with their descriptions and constraints.
+     *
+     * @return A map of parameter names to their descriptions
+     */
+    public Map<String, String> getAvailableParameters() {
+        return AbeewayParams.builder().getAvailableParameters();
     }
 
     /**

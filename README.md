@@ -4,6 +4,7 @@ Java library for decoding/encoding Abeeway Smart Badge LoRaWAN messages with com
 
 ## Features
 
+### Core Functionality
 - Complete decoding of all 19 message types
 - GPS/WiFi/BLE position decoding
 - Device configuration management (200+ parameters)
@@ -11,6 +12,23 @@ Java library for decoding/encoding Abeeway Smart Badge LoRaWAN messages with com
 - Battery and health status monitoring
 - Downlink command encoding
 - Full compatibility with JavaScript driver test cases
+
+### 🚀 High-Level Parameter Builder (NEW!)
+- **Fluent API**: Configure devices without protocol knowledge
+- **Type Safety**: Compile-time validation of parameter types  
+- **Auto Validation**: Parameter ranges validated automatically
+- **Self-Documenting**: Human-readable parameter names
+- **Parameter Discovery**: Find available parameters with descriptions
+- **IDE Support**: Full autocomplete and documentation
+
+```java
+// Easy configuration - no protocol expertise needed!
+AbeewayParams params = AbeewaySmartBadgeCodec.newParameters()
+    .setGpsTimeout(120)
+    .setMotionSensitivity(AbeewayParams.MotionSensitivity.HIGH)
+    .setBatteryLowThreshold(15)
+    .build();
+```
 
 ## Requirements
 
@@ -31,13 +49,61 @@ mvn test
 
 ## Usage
 
+### Basic Decoding
+
 ```java
 AbeewaySmartBadgeCodec codec = new AbeewaySmartBadgeCodec();
 
 // Decode uplink message
 DecodedUplink result = codec.decodeUplink(payloadBytes, fPort, timestamp);
+UplinkData data = (UplinkData) result.getData();
+```
 
-// Encode downlink command
+### High-Level Parameter Configuration (Recommended)
+
+```java
+// Build parameters using fluent API - no protocol knowledge required!
+AbeewayParams params = AbeewaySmartBadgeCodec.newParameters()
+    .setGpsTimeout(120)                    // 2 minutes
+    .setUplinkPeriod(3600)                // 1 hour
+    .setMotionSensitivity(AbeewayParams.MotionSensitivity.HIGH)
+    .setBatteryLowThreshold(15)           // 15%
+    .setPowerSaveMode(true)
+    .build();
+
+// Encode parameters for transmission
+EncodedDownlink downlink = codec.encodeParameters(params, 2);
+```
+
+### Configuration Commands
+
+```java
+import com.abeeway.smartbadge.encoders.ParameterEncoder;
+
+// Set device mode
+EncodedDownlink modeCommand = codec.encodeConfigurationCommand(
+    ParameterEncoder.setMode(AbeewayParams.OperatingMode.MOTION_TRACKING), 2);
+
+// Request current configuration
+EncodedDownlink configRequest = codec.encodeConfigurationCommand(
+    ParameterEncoder.requestConfiguration(), 2);
+```
+
+### Parameter Discovery
+
+```java
+// Get all available parameters with their descriptions and ranges
+Map<String, String> availableParams = codec.getAvailableParameters();
+for (Map.Entry<String, String> param : availableParams.entrySet()) {
+    System.out.println(param.getKey() + ": " + param.getValue());
+}
+```
+
+### Low-Level Encoding (Advanced)
+
+```java
+// For advanced users who know the protocol details
+Map<String, Object> commandData = Map.of("messageType", "SET_MODE", "mode", "MOTION_TRACKING");
 EncodedDownlink downlink = codec.encodeDownlink(commandData, fPort);
 ```
 
